@@ -1,0 +1,64 @@
+version: '2'
+services:
+
+  master:
+    image: anthonyy/hadoop-2.7.7:v6
+    container_name: hadoop-master
+    networks: 
+      default:
+        ipv4_address: 162.16.0.110
+    extra_hosts:
+      - "slave1: 162.16.0.111"
+      - "slave2: 162.16.0.112"
+    hostname: master
+    environment:
+      ROLE: master
+    tty: true
+    stdin_open: true
+    privileged: true
+    ports:
+      - "8088:8088"
+  
+
+  slvae1:
+    image: anthonyy/hadoop-2.7.7:v6
+    container_name: hadoop-slave1
+    networks: 
+      default:
+        ipv4_address: 162.16.0.111
+    extra_hosts:
+      - "master:162.16.0.110"
+      - "slave2:162.16.0.112"
+    hostname: slave1
+    environment:
+      ROLE: slave
+    tty: true
+    stdin_open: true
+    privileged: true
+
+  slvae2:
+    image: anthonyy/hadoop-2.7.7:v6
+    container_name: hadoop-slave2
+    networks: 
+      default:
+        ipv4_address: 162.16.0.112
+    extra_hosts:
+      - "master:162.16.0.110"
+      - "slave1:162.16.0.111"
+    hostname: slave2
+    environment:
+      ROLE: slave
+    tty: true
+    stdin_open: true
+    privileged: true
+
+networks:
+    default: 
+      driver: bridge
+      driver_opts:
+        com.docker.network.enable_ipv6: "false"
+      ipam:
+        driver: default
+        config:
+        - subnet: 162.16.0.0/16
+          gateway: 162.16.0.1
